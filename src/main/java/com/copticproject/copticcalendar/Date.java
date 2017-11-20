@@ -5,6 +5,20 @@ import org.omg.CORBA.portable.ApplicationException;
 import javax.management.InvalidApplicationException;
 
 public class Date {
+    public static final int MinMonth = 1;
+    public static final int MaxMonth = 13;
+    public static final int MinDay = 1;
+    public static final int MaxDayInDefaultMonths = 30;
+    public static final int MaxDayInKogiMonthDefaultYear = 5;
+    public static final int MaxDayInKogiMonthLeapYear = 6;
+    public static final int MinYear = 1;
+    public static final int LeapYearFrequency = 4;
+
+    public static final int DaysInNonLeapYear = (MaxMonth - 1) * MaxDayInDefaultMonths + MaxDayInKogiMonthDefaultYear;
+    public static final int DaysInLeapYear = (MaxMonth - 1) * MaxDayInDefaultMonths + MaxDayInKogiMonthLeapYear;
+
+    private static final int DaysInFourConsecutiveYears = (LeapYearFrequency - 1) * DaysInNonLeapYear + DaysInLeapYear;
+
     private int day;
     private int month;
     private int year;
@@ -33,8 +47,8 @@ public class Date {
     @Override
     public int hashCode() {
         return (this.day - 1) +
-                (this.month - 1) * 30 +
-                (this.year - 1) * 30 * 13;
+                (this.month - 1) * MaxDayInDefaultMonths +
+                (this.year - 1) * MaxDayInDefaultMonths * MaxMonth;
     }
 
     public int getDay() {
@@ -85,6 +99,52 @@ public class Date {
         this.year = year;
     }
 
+    public int getDayInYear() {
+        return (this.month - 1) * MaxDayInDefaultMonths + this.day;
+    }
+
+    public static int getDaysOfYear(int year) throws YearOutOfRangeException {
+        return IsLeapYear(year) ? DaysInLeapYear : DaysInNonLeapYear;
+    }
+
+    public int getAbsoluteDays() {
+        int days = ((this.year - 1) / LeapYearFrequency) * DaysInFourConsecutiveYears + this.getDayInYear();
+
+        for (int year = this.year - 1; year >= this.year - ((this.year - 1) % LeapYearFrequency); year--)
+            try {
+                days += getDaysOfYear(this.year);
+            } catch (YearOutOfRangeException e) {
+                throw new IllegalStateException();
+            }
+
+        return days;
+    }
+
+    public static Date createFromAbsoluteDays(int absoluteDays) {
+        int year = (absoluteDays / DaysInFourConsecutiveYears) * LeapYearFrequency;
+        absoluteDays %= DaysInFourConsecutiveYears;
+
+        try {
+            for (int currentYearDays = getDaysOfYear(year); absoluteDays >= currentYearDays; currentYearDays = getDaysOfYear(year))
+            {
+                year++;
+                absoluteDays -= currentYearDays;
+            }
+
+            return new Date(absoluteDays % MaxDayInDefaultMonths + 1, absoluteDays / MaxDayInDefaultMonths + 1, year);
+        } catch (YearOutOfRangeException e) {
+            throw new IllegalStateException();
+        } catch (MonthOutOfRangeException e) {
+            throw new IllegalStateException();
+        } catch (DayOutOfRangeException e) {
+            throw new IllegalStateException();
+        } catch (NonLeapYearDayOutOfRangeException e) {
+            throw new IllegalStateException();
+        } catch (LastMonthDayOutOfRangeException e) {
+            throw new IllegalStateException();
+        }
+    }
+
     public boolean isLeapYear() {
         try {
             return IsLeapYear(this.year);
@@ -96,29 +156,29 @@ public class Date {
     public static boolean IsLeapYear(int year) throws YearOutOfRangeException {
         ValidateYear(year);
 
-
+        return (year + 1) % LeapYearFrequency == 0;
     }
 
     private static void ValidateDay(int day) throws DayOutOfRangeException {
-        if (day < 1 || day > 30)
+        if (day < MinDay || day > MaxDayInDefaultMonths)
             throw new DayOutOfRangeException();
     }
 
     private static void ValidateMonth(int month) throws MonthOutOfRangeException {
-        if (month < 1 || month > 13)
+        if (month < MinMonth || month > MaxMonth)
             throw new MonthOutOfRangeException();
     }
 
     private static void ValidateYear(int year) throws YearOutOfRangeException {
-        if (year < 1)
+        if (year < MinYear)
             throw new YearOutOfRangeException();
     }
 
     private static void ValidateDayOfYear(int day, int month, int year) throws LastMonthDayOutOfRangeException, NonLeapYearDayOutOfRangeException, YearOutOfRangeException {
-        if (month == 13) {
-            if (day > 6)
+        if (month == MaxMonth) {
+            if (day > MaxDayInKogiMonthLeapYear)
                 throw new LastMonthDayOutOfRangeException();
-            if (day == 6 && !IsLeapYear(year))
+            if (day == MaxDayInKogiMonthLeapYear && !IsLeapYear(year))
                 throw new NonLeapYearDayOutOfRangeException();
         }
     }
