@@ -1,7 +1,7 @@
-package com.copticproject.copticcalendar.Tests;
+package com.copticproject.api.copticcalendar.Tests;
 
-import com.copticproject.copticcalendar.Date;
-import com.copticproject.copticcalendar.Gregorian;
+import com.copticproject.api.copticcalendar.Date;
+import com.copticproject.api.copticcalendar.Gregorian;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

@@ -1,4 +1,4 @@
-package com.copticproject.copticcalendar;
+package com.copticproject.api.copticcalendar;
 
 public class NonLeapYearDayOutOfRangeException extends Throwable {
     @Override

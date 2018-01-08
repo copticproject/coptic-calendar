@@ -1,4 +1,4 @@
-package com.copticproject.copticcalendar;
+package com.copticproject.api.copticcalendar;
 
 import org.omg.CORBA.portable.ApplicationException;
 
