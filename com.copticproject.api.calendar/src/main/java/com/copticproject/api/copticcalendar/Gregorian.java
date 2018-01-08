@@ -30,7 +30,7 @@ public class Gregorian {
 
     public static GregorianCalendar FromCoptic(Date copticDate) {
         GregorianCalendar gregorian = (GregorianCalendar)DateForFirstDayOfFirstCopticYear.clone();
-        gregorian.add(GregorianCalendar.DAY_OF_YEAR, copticDate.getAbsoluteDays());
+        gregorian.add(GregorianCalendar.DAY_OF_YEAR, copticDate.getAbsoluteDays() - 1);
 
         return gregorian;
     }

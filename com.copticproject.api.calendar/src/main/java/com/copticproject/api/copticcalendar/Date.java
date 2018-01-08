@@ -107,6 +107,7 @@ public class Date {
         return IsLeapYear(year) ? DaysInLeapYear : DaysInNonLeapYear;
     }
 
+    // Get days since 1 Toot year 1. The result is 1-based which means the for the day 1 Toot year 1 the return value will be 1
     public int getAbsoluteDays() {
         int days = ((this.year - 1) / LeapYearFrequency) * DaysInFourConsecutiveYears + this.getDayInYear();
 
