@@ -131,7 +131,7 @@ public class Date {
                 absoluteDays -= currentYearDays;
             }
 
-            return new Date(absoluteDays % MaxDayInDefaultMonths + 1, absoluteDays / MaxDayInDefaultMonths + 1, year);
+            return new Date(absoluteDays % MaxDayInDefaultMonths + 1, absoluteDays / MaxDayInDefaultMonths + 1, year + 1);
         } catch (YearOutOfRangeException e) {
             throw new IllegalStateException();
         } catch (MonthOutOfRangeException e) {

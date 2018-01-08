@@ -8,8 +8,9 @@ public class Gregorian {
     private static final long MillisecondsPerDay = 24 * 60 * 60 * 1000;
     private static final int epochYear = 1970;
 
+    // The first day of the first Coptic year was on 29th of August 284
     private static final GregorianCalendar DateForFirstDayOfFirstCopticYear =
-            new GregorianCalendar(284, 8, 29);
+            new GregorianCalendar(284, 7, 29);
 
     public static Date ToCoptic(GregorianCalendar gregorianDate) {
         GregorianCalendar date = (GregorianCalendar)gregorianDate.clone();
@@ -21,7 +22,7 @@ public class Gregorian {
         date.set(GregorianCalendar.SECOND, 0);
         date.set(GregorianCalendar.MILLISECOND, 0);
 
-        int absoluteCopticDays = (int)((date.getTime().getTime() - DateForFirstDayOfFirstCopticYear.getTime().getTime()) /
+        int absoluteCopticDays = 1 + (int)((date.getTime().getTime() - DateForFirstDayOfFirstCopticYear.getTime().getTime()) /
                 MillisecondsPerDay);
 
         return Date.createFromAbsoluteDays(absoluteCopticDays);
