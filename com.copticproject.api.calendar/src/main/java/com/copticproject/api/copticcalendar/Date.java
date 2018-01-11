@@ -1,9 +1,5 @@
 package com.copticproject.api.copticcalendar;
 
-import org.omg.CORBA.portable.ApplicationException;
-
-import javax.management.InvalidApplicationException;
-
 public class Date {
     public static final int MinMonth = 1;
     public static final int MaxMonth = 13;
@@ -49,6 +45,11 @@ public class Date {
         return (this.day - 1) +
                 (this.month - 1) * MaxDayInDefaultMonths +
                 (this.year - 1) * MaxDayInDefaultMonths * MaxMonth;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d/%d/%d", this.day, this.month, this.year);
     }
 
     public int getDay() {
@@ -113,7 +114,7 @@ public class Date {
 
         for (int year = this.year - 1; year >= this.year - ((this.year - 1) % LeapYearFrequency); year--)
             try {
-                days += getDaysOfYear(this.year);
+                days += getDaysOfYear(year);
             } catch (YearOutOfRangeException e) {
                 throw new IllegalStateException();
             }
@@ -122,17 +123,17 @@ public class Date {
     }
 
     public static Date createFromAbsoluteDays(int absoluteDays) {
-        int year = (absoluteDays / DaysInFourConsecutiveYears) * LeapYearFrequency;
+        absoluteDays--;
+        int year = 1 + (absoluteDays / DaysInFourConsecutiveYears) * LeapYearFrequency;
         absoluteDays %= DaysInFourConsecutiveYears;
 
         try {
-            for (int currentYearDays = getDaysOfYear(year); absoluteDays >= currentYearDays; currentYearDays = getDaysOfYear(year))
-            {
+            for (int currentYearDays = getDaysOfYear(year); absoluteDays >= currentYearDays; currentYearDays = getDaysOfYear(year)) {
                 year++;
                 absoluteDays -= currentYearDays;
             }
 
-            return new Date(absoluteDays % MaxDayInDefaultMonths + 1, absoluteDays / MaxDayInDefaultMonths + 1, year + 1);
+            return new Date(absoluteDays % MaxDayInDefaultMonths + 1, absoluteDays / MaxDayInDefaultMonths + 1, year);
         } catch (YearOutOfRangeException e) {
             throw new IllegalStateException();
         } catch (MonthOutOfRangeException e) {

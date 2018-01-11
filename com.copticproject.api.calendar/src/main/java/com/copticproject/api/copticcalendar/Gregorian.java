@@ -22,8 +22,8 @@ public class Gregorian {
         date.set(GregorianCalendar.SECOND, 0);
         date.set(GregorianCalendar.MILLISECOND, 0);
 
-        int absoluteCopticDays = 1 + (int)((date.getTime().getTime() - DateForFirstDayOfFirstCopticYear.getTime().getTime()) /
-                MillisecondsPerDay);
+        int absoluteCopticDays = 1 + (int)Math.round((date.getTime().getTime() - DateForFirstDayOfFirstCopticYear.getTime().getTime()) /
+                (double)MillisecondsPerDay);
 
         return Date.createFromAbsoluteDays(absoluteCopticDays);
     }
